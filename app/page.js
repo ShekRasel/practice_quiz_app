@@ -1,103 +1,77 @@
-import Image from "next/image";
+"use client";
+import Option from "@/components/Option";
+import Question from "@/components/Question";
+import Result from "@/components/Result";
+import { Button } from "@/components/ui/button";
+import { questionsData } from "@/data/question";
+import { useState } from "react";
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              app/page.js
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [selectedOption, setSelectedOption] = useState(null);
+  const [questionIndex, setQuestionIndex] = useState(0);
+  const [score, setScore] = useState(0);
+  const [checked, setChecked] = useState(null);
+  const [tracking, setTracking] = useState(1);
+  const [state, setState] = useState(false);
+  const totalQuestion = questionsData.length;
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+  const handleNextQuestion = () => {
+    if (tracking === totalQuestion) {
+      setState(true);
+    } else {
+      setQuestionIndex((prev) => prev + 1);
+      setChecked(null);
+      const answer = questionsData[questionIndex].ans;
+      if (selectedOption === answer) {
+        setScore((prev) => prev + 1);
+      }
+      setTracking((prev) => prev + 1);
+    }
+  };
+
+  return (
+    <div className="w-full h-screen bg-gray-300 flex justify-center items-center">
+      <div className="min-h-96 min-w-96 bg-white rounded-md p-2">
+        <h1 className="text-center text-2xl font-bold text-purple-700">
+          Quiz App
+        </h1>
+
+        {state ? (
+          <Result score={score} />
+        ) : (
+          <>
+            <div className="flex justify-between mt-2 mb-2 px-4 py-2 bg-gray-50">
+              <h1 className="font-bold">Your score is : {score}</h1>
+              <h1 className="font-bold">
+                {tracking}/{totalQuestion}
+              </h1>
+            </div>
+
+            <Question
+              questionsData={questionsData}
+              questionIndex={questionIndex}
             />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+
+            <Option
+              questionsData={questionsData}
+              questionIndex={questionIndex}
+              setSelectedOption={setSelectedOption}
+              setChecked={setChecked}
+              checked={checked}
+            />
+
+            <div className="flex justify-center items-center mt-5">
+              <Button
+                onClick={handleNextQuestion}
+                className="disabled"
+                disabled={!checked && true}
+              >
+                Next
+              </Button>
+            </div>
+          </>
+        )}
+      </div>
     </div>
   );
 }
