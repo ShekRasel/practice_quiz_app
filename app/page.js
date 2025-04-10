@@ -11,21 +11,29 @@ export default function Home() {
   const [questionIndex, setQuestionIndex] = useState(0);
   const [score, setScore] = useState(0);
   const [checked, setChecked] = useState(null);
-  const [tracking, setTracking] = useState(1);
+  const [tracking, setTracking] = useState(0);
   const [state, setState] = useState(false);
-  const totalQuestion = questionsData.length;
-
+  const [correctAns, setCorrectAns] = useState(false);
+  const [wrong, setWrong] = useState(false);
+  
+  const totalQuestion = questionsData.length - 1;
+  const answer = questionsData[questionIndex].ans;
   const handleNextQuestion = () => {
     if (tracking === totalQuestion) {
+      if (selectedOption === answer) {
+        setScore((prev) => prev + 1);
+      }
       setState(true);
     } else {
       setQuestionIndex((prev) => prev + 1);
       setChecked(null);
-      const answer = questionsData[questionIndex].ans;
+      
       if (selectedOption === answer) {
         setScore((prev) => prev + 1);
       }
-      setTracking((prev) => prev + 1);
+      setTracking((prev) => (prev + 1));
+      setCorrectAns(false)
+      setWrong(false)
     }
   };
 
@@ -43,7 +51,7 @@ export default function Home() {
             <div className="flex justify-between mt-2 mb-2 px-4 py-2 bg-gray-50">
               <h1 className="font-bold">Your score is : {score}</h1>
               <h1 className="font-bold">
-                {tracking}/{totalQuestion}
+                {tracking + 1}/{totalQuestion + 1}
               </h1>
             </div>
 
@@ -58,13 +66,17 @@ export default function Home() {
               setSelectedOption={setSelectedOption}
               setChecked={setChecked}
               checked={checked}
+              setCorrectAns = {setCorrectAns}
+              correctAns = {correctAns}
+              setWrong = {setWrong}
+              wrong = {wrong}
             />
 
             <div className="flex justify-center items-center mt-5">
               <Button
                 onClick={handleNextQuestion}
                 className="disabled"
-                disabled={!checked && true}
+                disabled={!checked}
               >
                 Next
               </Button>
