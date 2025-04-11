@@ -2,40 +2,31 @@
 import Option from "@/components/Option";
 import Question from "@/components/Question";
 import Result from "@/components/Result";
+import Time from "@/components/Time";
+import Time2 from "@/components/Time2";
 import { Button } from "@/components/ui/button";
 import { questionsData } from "@/data/question";
 import { useState } from "react";
 
 export default function Home() {
-  const [selectedOption, setSelectedOption] = useState(null);
   const [questionIndex, setQuestionIndex] = useState(0);
   const [score, setScore] = useState(0);
   const [checked, setChecked] = useState(null);
-  const [tracking, setTracking] = useState(0);
-  const [state, setState] = useState(false);
-  const [correctAns, setCorrectAns] = useState(false);
   const [wrong, setWrong] = useState(false);
-  
-  const totalQuestion = questionsData.length - 1;
-  const answer = questionsData[questionIndex].ans;
+  const [timer, setTimer] = useState(null);
+  const [state ,setState] = useState(true);
+  const [btnDisable,setBtnDisable] = useState(true)
+
   const handleNextQuestion = () => {
-    if (tracking === totalQuestion) {
-      if (selectedOption === answer) {
-        setScore((prev) => prev + 1);
-      }
-      setState(true);
-    } else {
-      setQuestionIndex((prev) => prev + 1);
-      setChecked(null);
-      
-      if (selectedOption === answer) {
-        setScore((prev) => prev + 1);
-      }
-      setTracking((prev) => (prev + 1));
-      setCorrectAns(false)
-      setWrong(false)
-    }
+    setQuestionIndex((prev) => prev + 1);
+    setChecked(null);
+    setWrong(false);
+    clearInterval(timer);
+    setState(!state);
+    setBtnDisable(!btnDisable);
   };
+
+  console.log("Home");
 
   return (
     <div className="w-full h-screen bg-gray-300 flex justify-center items-center">
@@ -44,15 +35,21 @@ export default function Home() {
           Quiz App
         </h1>
 
-        {state ? (
+        {questionIndex === questionsData.length ? (
           <Result score={score} />
         ) : (
           <>
             <div className="flex justify-between mt-2 mb-2 px-4 py-2 bg-gray-50">
-              <h1 className="font-bold">Your score is : {score}</h1>
-              <h1 className="font-bold">
-                {tracking + 1}/{totalQuestion + 1}
-              </h1>
+              
+                <h1 className="font-bold">Your score : <span className="text-green-600">{score}</span></h1>
+
+                {/* <Time timer={timer} setTimer={setTimer} state={state}  setChecked={setChecked} checked = {checked} questionsData={questionsData} questionIndex={questionIndex} setBtnDisable={setBtnDisable}/> */}
+
+                <Time2/>
+                <h1 className="font-bold">
+                  {questionIndex + 1}/{questionsData.length}
+                </h1>
+              
             </div>
 
             <Question
@@ -63,20 +60,19 @@ export default function Home() {
             <Option
               questionsData={questionsData}
               questionIndex={questionIndex}
-              setSelectedOption={setSelectedOption}
               setChecked={setChecked}
               checked={checked}
-              setCorrectAns = {setCorrectAns}
-              correctAns = {correctAns}
-              setWrong = {setWrong}
-              wrong = {wrong}
+              setWrong={setWrong}
+              wrong={wrong}
+              setScore={setScore}
+              setBtnDisable={setBtnDisable}
             />
 
             <div className="flex justify-center items-center mt-5">
               <Button
                 onClick={handleNextQuestion}
                 className="disabled"
-                disabled={!checked}
+                disabled={btnDisable}
               >
                 Next
               </Button>
