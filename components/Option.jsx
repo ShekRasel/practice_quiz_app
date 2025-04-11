@@ -3,29 +3,28 @@ import React, { useState } from "react";
 const Option = ({
   questionsData,
   questionIndex,
-  setSelectedOption,
   setChecked,
   checked,
-  correctAns,
-  setCorrectAns,
   setWrong,
-  wrong
+  wrong,
+  setScore,
+  setBtnDisable
 }) => {
-  
   const answer = questionsData[questionIndex].ans;
+  
   const hanldeChange = (e) => {
-    
-
     const { name, id } = e.target;
     setChecked(id);
-    setSelectedOption(name);
+    setBtnDisable(false);
 
     if (name === answer) {
-      setCorrectAns(true);
+      setScore((prev) => prev + 1);
     } else {
       setWrong(true);
     }
   };
+
+
 
   return (
     <div>
@@ -38,13 +37,14 @@ const Option = ({
               name={option}
               checked={checked == index}
               onChange={(e) => hanldeChange(e)}
-              disabled={checked}
+              disabled={checked !== null && checked != index}
+
             />
             <label
               htmlFor={index}
-              className={`${correctAns && index == checked && "bg-green-500"} ${
+              className={`${ index == checked && "bg-green-500"} ${
                 wrong && index == checked && "bg-red-500"
-              } ${wrong && answer == option && 'bg-green-500'}`}
+              } ${wrong && answer == option && "bg-green-500"}`}
             >
               {option}
             </label>
