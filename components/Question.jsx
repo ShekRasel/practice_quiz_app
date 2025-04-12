@@ -1,6 +1,10 @@
-import React from 'react'
+import { useQuiz } from '@/context/QuizContext';
+import { questionsData } from '@/data/question';
 
-const Question = ({questionsData,questionIndex}) => {
+const Question = () => {
+  const {
+    questionIndex,
+  } = useQuiz();
 const data = questionsData.map((data)=>data.question);
   return (
     <div>

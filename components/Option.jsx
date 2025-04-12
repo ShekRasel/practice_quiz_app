@@ -1,15 +1,15 @@
-import React, { useState } from "react";
-
-const Option = ({
-  questionsData,
-  questionIndex,
-  setChecked,
-  checked,
-  setWrong,
-  wrong,
-  setScore,
-  setBtnDisable
-}) => {
+import { useQuiz } from "@/context/QuizContext";
+import { questionsData } from "@/data/question";
+const Option = () => {
+  const {
+    questionIndex,
+    setScore,
+    checked,
+    setChecked,
+    wrong,
+    setWrong,
+    setBtnDisable,
+  } = useQuiz();
   const answer = questionsData[questionIndex].ans;
   
   const hanldeChange = (e) => {
@@ -24,8 +24,6 @@ const Option = ({
     }
   };
 
-
-
   return (
     <div>
       <ul>
@@ -38,11 +36,10 @@ const Option = ({
               checked={checked == index}
               onChange={(e) => hanldeChange(e)}
               disabled={checked !== null && checked != index}
-
             />
             <label
               htmlFor={index}
-              className={`${ index == checked && "bg-green-500"} ${
+              className={`${index == checked && "bg-green-500"} ${
                 wrong && index == checked && "bg-red-500"
               } ${wrong && answer == option && "bg-green-500"}`}
             >

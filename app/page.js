@@ -4,30 +4,43 @@ import Question from "@/components/Question";
 import Result from "@/components/Result";
 import Time from "@/components/Time";
 import { Button } from "@/components/ui/button";
+import { useQuiz } from "@/context/QuizContext";
 import { questionsData } from "@/data/question";
 import { useEffect, useState } from "react";
 
 export default function Home() {
-  const [questionIndex, setQuestionIndex] = useState(0);
-  const [score, setScore] = useState(0);
-  const [checked, setChecked] = useState(null);
-  const [wrong, setWrong] = useState(false);
-  const [timer, setTimer] = useState(null);
   const [state, setState] = useState(true);
-  const [btnDisable, setBtnDisable] = useState(true);
-
-  const [count, setCount] = useState(30);
+  const {
+    questionIndex,
+    count,
+    setCount,
+    setQuestionIndex,
+    setChecked,
+    setWrong,
+    timer,
+    btnDisable,
+    setBtnDisable,
+    setStartQuiz,
+    startQuiz,
+    setTimer,
+    score,
+  } = useQuiz();
 
   useEffect(() => {
-    if (count > 0) {
+    if (startQuiz) {
       setCount(30);
-    }
-    const intervalId = setInterval(() => {
-      setCount((prev) => prev - 1);
-    }, 1000);
+      if(questionIndex !== questionsData.length ){
 
-    setTimer(intervalId);
-  }, [state]);
+        const intervalId = setInterval(() => {
+          setCount((prev) => prev - 1);
+          
+        }, 1000);
+
+        setTimer(intervalId);
+      }
+
+    }
+  }, [state,startQuiz]);
 
   useEffect(() => {
     if (count < 1) {
@@ -53,56 +66,55 @@ export default function Home() {
     setBtnDisable(!btnDisable);
   };
 
+
+
   return (
     <div className="w-full h-screen bg-gray-300 flex justify-center items-center">
-      <div className="min-h-96 min-w-96 bg-white rounded-md p-2">
+      <div className="min-h-96  min-w-96 bg-white rounded-md p-2">
         <h1 className="text-center text-2xl font-bold text-purple-700">
           Quiz App
         </h1>
 
-        {questionIndex === questionsData.length ? (
-          <Result score={score} />
-        ) : (
+        {startQuiz ? (
           <>
-            <div className="flex justify-between mt-2 mb-2 px-4 py-2 bg-gray-50">
-              <h1 className="font-bold">
-                Your score : <span className="text-green-600">{score}</span>
-              </h1>
+            {questionIndex === questionsData.length ? (
+              <Result />
+            ) : (
+              <>
+                <div className="flex justify-between mt-2 mb-2 px-4 py-2 bg-gray-50">
+                  <h1 className="font-bold">
+                    Your score : <span className="text-green-600">{score}</span>
+                  </h1>
+                  <Time />
+                  <h1 className="font-bold">
+                    {questionIndex + 1}/{questionsData.length}
+                  </h1>
+                </div>
 
-              {/* <Time timer={timer} setTimer={setTimer} state={state}  setChecked={setChecked} checked = {checked} questionsData={questionsData} questionIndex={questionIndex} setBtnDisable={setBtnDisable}/> */}
+                <Question />
 
-              <Time count={count} />
-              <h1 className="font-bold">
-                {questionIndex + 1}/{questionsData.length}
-              </h1>
-            </div>
+                <Option />
 
-            <Question
-              questionsData={questionsData}
-              questionIndex={questionIndex}
-            />
-
-            <Option
-              questionsData={questionsData}
-              questionIndex={questionIndex}
-              setChecked={setChecked}
-              checked={checked}
-              setWrong={setWrong}
-              wrong={wrong}
-              setScore={setScore}
-              setBtnDisable={setBtnDisable}
-            />
-
-            <div className="flex justify-center items-center mt-5">
-              <Button
-                onClick={handleNextQuestion}
-                className="disabled"
-                disabled={btnDisable}
-              >
-                Next
-              </Button>
-            </div>
+                <div className="flex justify-center items-center mt-5">
+                  <Button
+                    onClick={handleNextQuestion}
+                    className="disabled"
+                    disabled={btnDisable}
+                  >
+                    Next
+                  </Button>
+                </div>
+              </>
+            )}
           </>
+        ) : (
+          <div
+            className=" h-60 flex-col gap-3 font-bold
+         flex justify-center items-center"
+          >
+            <h1>Click to Start Quiz</h1>
+            <Button onClick={() => setStartQuiz(true)}>Start</Button>
+          </div>
         )}
       </div>
     </div>
